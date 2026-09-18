@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { type OrderingContent } from "@/types/content";
+import Burst from "./Burst";
 
 interface OrderingActivityProps {
   content: OrderingContent;
@@ -56,14 +58,24 @@ export default function OrderingActivity({ content }: OrderingActivityProps) {
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">{content.instruction}</p>
 
-      <div className="space-y-2">
+      <div className="relative space-y-2">
+        <Burst active={submitted && orderedIds.every((id, index) => isItemCorrect(id, index))} />
         {orderedIds.map((id, index) => {
           const item = content.items.find((i) => i.id === id);
           if (!item) return null;
           const isCorrect = submitted && isItemCorrect(id, index);
 
           return (
-            <Card key={id} className={`p-3 transition-colors ${submitted ? (isCorrect ? "border-green-500 bg-green-500/5" : "border-red-500 bg-red-500/5") : ""}`}>
+            <Card
+              key={id}
+              className={`hover-lift rounded-xl p-3 transition-colors ${
+                submitted
+                  ? isCorrect
+                    ? "border-green-500 bg-green-500/5"
+                    : "border-red-500 bg-red-500/10 animate-shake"
+                  : ""
+              }`}
+            >
               <div className="flex items-center gap-3">
                 <div className="flex flex-col gap-0.5 shrink-0">
                   <Button
@@ -87,14 +99,24 @@ export default function OrderingActivity({ content }: OrderingActivityProps) {
                     ▼
                   </Button>
                 </div>
-                <Badge variant="outline" className="shrink-0 w-7 justify-center">
+                <Badge className="w-7 shrink-0 justify-center rounded-lg">
                   {index + 1}
                 </Badge>
                 <span className="flex-1 text-sm">{item.text}</span>
-                {submitted && (
-                  <Badge variant="outline" className={isCorrect ? "bg-green-500/10 text-green-700 border-green-500" : "bg-red-500/10 text-red-700 border-red-500"}>
-                    {isCorrect ? "Correct" : `Position: ${item.correctPosition}`}
-                  </Badge>
+                {submitted && isCorrect && (
+                  <span className="animate-pop flex size-6 shrink-0 items-center justify-center rounded-full bg-green-500 text-white">
+                    <Check className="size-4" />
+                  </span>
+                )}
+                {submitted && !isCorrect && (
+                  <div className="flex items-center gap-1.5">
+                    <span className="animate-pop flex size-6 shrink-0 items-center justify-center rounded-full bg-red-500 text-white">
+                      <X className="size-4" />
+                    </span>
+                    <Badge variant="outline" className="bg-red-500/10 text-red-700 border-red-500">
+                      Position: {item.correctPosition}
+                    </Badge>
+                  </div>
                 )}
               </div>
             </Card>
@@ -113,7 +135,7 @@ export default function OrderingActivity({ content }: OrderingActivityProps) {
       </div>
 
       {submitted && (
-        <Card className="p-4 bg-muted/50">
+        <Card className="animate-rise rounded-xl border-l-4 border-primary bg-muted/60 p-4">
           <p className="text-sm">
             <span className="font-semibold">Explanation:</span> {content.explanation}
           </p>

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 import { chapters } from "@/content/chapters"
 import { LessonView } from "@/components/lesson/LessonView"
+import { AppShell } from "@/components/layout/AppShell"
 
 export function generateStaticParams() {
   const params: { slug: string; lesson: string }[] = []
@@ -26,5 +27,9 @@ export default async function LessonPage({
     notFound()
   }
 
-  return <LessonView chapter={chapter} lesson={lesson} />
+  return (
+    <AppShell>
+      <LessonView chapter={chapter} lesson={lesson} />
+    </AppShell>
+  )
 }

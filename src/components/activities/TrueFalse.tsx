@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { type TrueFalseContent } from "@/types/content";
+import Burst from "./Burst";
 
 interface TrueFalseProps {
   content: TrueFalseContent;
@@ -31,14 +33,24 @@ export default function TrueFalse({ content }: TrueFalseProps) {
 
   return (
     <div className="space-y-4">
-      <div className="space-y-3">
+      <div className="relative space-y-3">
+        <Burst active={submitted && content.statements.every((s) => answers[s.id] === s.correct)} />
         {content.statements.map((statement, index) => {
           const answer = answers[statement.id];
           const showResult = submitted;
           const isCorrectAnswer = answer === statement.correct;
 
           return (
-            <Card key={statement.id} className={`p-4 transition-colors ${showResult ? (isCorrectAnswer ? "border-green-500 bg-green-500/5" : "border-red-500 bg-red-500/5") : ""}`}>
+            <Card
+              key={statement.id}
+              className={`rounded-xl p-4 transition-colors ${
+                showResult
+                  ? isCorrectAnswer
+                    ? "border-green-500 bg-green-500/5"
+                    : "border-red-500 bg-red-500/10 animate-shake"
+                  : ""
+              }`}
+            >
               <p className="mb-3 font-medium">{index + 1}. {statement.text}</p>
               <div className="flex gap-2">
                 <Button
@@ -59,13 +71,20 @@ export default function TrueFalse({ content }: TrueFalseProps) {
                 >
                   False
                 </Button>
-                {showResult && (
-                  <Badge
-                    variant="outline"
-                    className={isCorrectAnswer ? "bg-green-500/10 text-green-700 border-green-500 ml-2" : "bg-red-500/10 text-red-700 border-red-500 ml-2"}
-                  >
-                    {isCorrectAnswer ? "Correct" : `Answer: ${statement.correct ? "True" : "False"}`}
-                  </Badge>
+                {showResult && isCorrectAnswer && (
+                  <span className="animate-pop ml-2 flex size-6 shrink-0 items-center justify-center self-center rounded-full bg-green-500 text-white">
+                    <Check className="size-4" />
+                  </span>
+                )}
+                {showResult && !isCorrectAnswer && (
+                  <div className="ml-2 flex items-center gap-1.5">
+                    <span className="animate-pop flex size-6 shrink-0 items-center justify-center rounded-full bg-red-500 text-white">
+                      <X className="size-4" />
+                    </span>
+                    <Badge variant="outline" className="bg-red-500/10 text-red-700 border-red-500">
+                      Answer: {statement.correct ? "True" : "False"}
+                    </Badge>
+                  </div>
                 )}
               </div>
             </Card>
@@ -86,7 +105,7 @@ export default function TrueFalse({ content }: TrueFalseProps) {
       </div>
 
       {submitted && (
-        <Card className="p-4 bg-muted/50">
+        <Card className="animate-rise rounded-xl border-l-4 border-primary bg-muted/60 p-4">
           <p className="text-sm">
             <span className="font-semibold">Explanation:</span> {content.explanation}
           </p>

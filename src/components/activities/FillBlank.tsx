@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { type FillBlankContent } from "@/types/content";
+import Burst from "./Burst";
 
 interface FillBlankProps {
   content: FillBlankContent;
@@ -58,36 +60,42 @@ export default function FillBlank({ content }: FillBlankProps) {
 
   return (
     <div className="space-y-4">
-      <Card className="p-4">
-        <p className="text-base leading-relaxed whitespace-pre-wrap">
-          {sentenceParts.parts.map((part, i) => {
-            if (part.value.startsWith("__BLANK_")) {
-              const blankId = part.value.replace("__BLANK_", "").replace("__", "");
-              const blank = content.blanks.find((b) => b.id === blankId);
-              const isCorrect = submitted && isBlankCorrect(blankId);
+      <div className="relative">
+        <Burst active={submitted && content.blanks.every((b) => isBlankCorrect(b.id))} />
+        <Card className="p-4">
+          <p className="text-base leading-relaxed whitespace-pre-wrap">
+            {sentenceParts.parts.map((part, i) => {
+              if (part.value.startsWith("__BLANK_")) {
+                const blankId = part.value.replace("__BLANK_", "").replace("__", "");
+                const blank = content.blanks.find((b) => b.id === blankId);
+                const isCorrect = submitted && isBlankCorrect(blankId);
 
-              return (
-                <span key={i} className="inline-block mx-1">
-                  <Input
-                    value={answers[blankId] || ""}
-                    onChange={(e) => setAnswers((prev) => ({ ...prev, [blankId]: e.target.value }))}
-                    disabled={submitted}
-                    placeholder="..."
-                    className={`inline-block w-32 text-center h-8 ${submitted ? (isCorrect ? "border-green-500 bg-green-500/5" : "border-red-500 bg-red-500/5") : ""}`}
-                    aria-label={`Blank ${blank?.position || blankId}`}
-                  />
-                  {submitted && !isCorrect && (
-                    <span className="text-xs text-red-600 block mt-1">
-                      Answer: {blank?.acceptedAnswers[0]}
-                    </span>
-                  )}
-                </span>
-              );
-            }
-            return <span key={i}>{part.value}</span>;
-          })}
-        </p>
-      </Card>
+                return (
+                  <span key={i} className="inline-block mx-1">
+                    <Input
+                      value={answers[blankId] || ""}
+                      onChange={(e) => setAnswers((prev) => ({ ...prev, [blankId]: e.target.value }))}
+                      disabled={submitted}
+                      placeholder="..."
+                      className={`inline-block h-8 w-32 rounded-lg border-2 text-center ${submitted ? (isCorrect ? "border-green-500 bg-green-500/5" : "border-red-500 bg-red-500/5") : ""}`}
+                      aria-label={`Blank ${blank?.position || blankId}`}
+                    />
+                    {submitted && isCorrect && (
+                      <Check className="ml-0.5 inline size-3.5 animate-pop align-middle text-green-600" />
+                    )}
+                    {submitted && !isCorrect && (
+                      <span className="animate-rise mt-1 block text-xs text-red-600">
+                        Answer: {blank?.acceptedAnswers[0]}
+                      </span>
+                    )}
+                  </span>
+                );
+              }
+              return <span key={i}>{part.value}</span>;
+            })}
+          </p>
+        </Card>
+      </div>
 
       <div className="flex gap-2">
         {!submitted ? (
@@ -102,7 +110,7 @@ export default function FillBlank({ content }: FillBlankProps) {
       </div>
 
       {submitted && (
-        <Card className="p-4 bg-muted/50">
+        <Card className="animate-rise rounded-xl border-l-4 border-primary bg-muted/60 p-4">
           <p className="text-sm">
             <span className="font-semibold">Explanation:</span> {content.explanation}
           </p>

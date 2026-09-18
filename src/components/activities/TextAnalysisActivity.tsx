@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { type TextAnalysisContent } from "@/types/content";
+import Burst from "./Burst";
 
 interface TextAnalysisActivityProps {
   content: TextAnalysisContent;
@@ -31,28 +32,25 @@ export default function TextAnalysisActivity({ content }: TextAnalysisActivityPr
 
   return (
     <div className="space-y-6">
-      <Card className="p-4 bg-muted/30">
+      <div className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
         <p className="whitespace-pre-wrap text-sm leading-relaxed">{content.text}</p>
-      </Card>
+      </div>
 
-      <div className="space-y-4">
-        <h3 className="text-base font-semibold">Questions</h3>
+      <div className="relative space-y-4">
+        <Burst active={submitted && content.questions.every((q) => answers[q.id] === q.correctId)} />
+        <h3 className="font-display font-semibold text-base">Questions</h3>
         {content.questions.map((question, index) => {
           const selectedId = answers[question.id];
 
           return (
-            <Card key={question.id} className="p-4">
-              <p className="font-medium mb-3">{index + 1}. {question.question}</p>
+            <Card key={question.id} className="rounded-xl p-4">
+              <p className="font-display font-semibold mb-3">{index + 1}. {question.question}</p>
               <div className="space-y-2">
                 {question.options.map((option) => {
                   const isSelected = selectedId === option.id;
                   const isCorrect = option.id === question.correctId;
                   const showResult = submitted;
-
-                  let borderClass = "border-border";
-                  if (showResult && isSelected && isCorrect) borderClass = "border-green-500";
-                  else if (showResult && isSelected && !isCorrect) borderClass = "border-red-500";
-                  else if (showResult && isCorrect) borderClass = "border-green-500 border-dashed";
+                  const showShake = showResult && isSelected && !isCorrect;
 
                   return (
                     <button
@@ -62,21 +60,31 @@ export default function TextAnalysisActivity({ content }: TextAnalysisActivityPr
                       onClick={() => handleSelect(question.id, option.id)}
                       className="w-full text-left"
                     >
-                      <Card className={`p-3 transition-colors cursor-pointer hover:bg-muted ${borderClass} ${isSelected && !submitted ? "bg-muted" : ""}`}>
+                      <Card
+                        className={`rounded-xl p-3 transition-colors cursor-pointer hover:bg-muted ${
+                          showResult && isCorrect
+                            ? "border-green-500 bg-green-500/10"
+                            : showResult && isSelected && !isCorrect
+                              ? "border-red-500 bg-red-500/10"
+                              : isSelected
+                                ? "border-primary ring-2 ring-primary"
+                                : ""
+                        } ${showShake ? "animate-shake" : ""}`}
+                      >
                         <div className="flex items-center gap-3">
                           <div className={`flex h-5 w-5 items-center justify-center rounded-full border-2 ${isSelected ? "border-primary" : "border-muted-foreground"} shrink-0`}>
                             {isSelected && <div className="h-2.5 w-2.5 rounded-full bg-primary" />}
                           </div>
                           <span className="flex-1 text-sm">{option.text}</span>
                           {showResult && isCorrect && (
-                            <Badge variant="outline" className="bg-green-500/10 text-green-700 border-green-500 text-xs">
-                              Correct
-                            </Badge>
+                            <span className="animate-pop flex size-6 shrink-0 items-center justify-center rounded-full bg-green-500 text-white">
+                              <Check className="size-4" />
+                            </span>
                           )}
                           {showResult && isSelected && !isCorrect && (
-                            <Badge variant="outline" className="bg-red-500/10 text-red-700 border-red-500 text-xs">
-                              Incorrect
-                            </Badge>
+                            <span className="animate-pop flex size-6 shrink-0 items-center justify-center rounded-full bg-red-500 text-white">
+                              <X className="size-4" />
+                            </span>
                           )}
                         </div>
                       </Card>

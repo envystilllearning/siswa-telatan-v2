@@ -7,6 +7,7 @@ import { ArrowLeft, ArrowRight, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { chapters } from "@/content/chapters"
+import { getChapterTheme } from "@/lib/chapter-colors"
 
 export default function PresentationPage() {
   const params = useParams()
@@ -17,6 +18,7 @@ export default function PresentationPage() {
   const lessonParam = searchParams.get("lesson")
 
   const chapter = chapters.find((ch) => ch.slug === slug)
+  const theme = chapter ? getChapterTheme(chapter.slug) : null
   const lesson = chapter?.lessons.find((l) => l.slug === lessonParam)
 
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -87,7 +89,7 @@ export default function PresentationPage() {
     return () => document.removeEventListener("keydown", onKeyDown)
   }, [totalSlides, router])
 
-  if (!chapter || !slide) {
+  if (!chapter || !theme || !slide) {
     return (
       <div className="h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
@@ -111,122 +113,144 @@ export default function PresentationPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-background overflow-hidden">
-      <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
+    <div
+      data-chapter={theme.key}
+      className="h-screen flex flex-col text-white overflow-hidden"
+      style={{ background: `linear-gradient(135deg, ${theme.color}, ${theme.deep})` }}
+    >
+      <div className="dot-grid absolute inset-0 pointer-events-none" />
+
+      <header className="relative flex items-center justify-between px-6 py-4 shrink-0">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.back()}
+            className="text-white hover:bg-white/15 hover:text-white"
+            aria-label="Exit presentation"
+          >
             <X className="size-5" />
           </Button>
           <div>
-            <p className="text-sm font-medium">{chapter.title}</p>
+            <p className="text-sm font-semibold">{chapter.title}</p>
             {lesson && (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-white/70">
                 Lesson {lesson.number}: {lesson.title}
               </p>
             )}
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Badge variant="outline">
+        <div className="flex items-center gap-2.5">
+          <Badge className="bg-white/15 text-white border-white/25 backdrop-blur-sm tabular-nums">
             {currentSlide + 1} / {totalSlides}
           </Badge>
-          {slide && (
-            <Badge variant="secondary">
-              {slideTypeLabels[slide.type] || slide.type}
-            </Badge>
-          )}
+          <Badge className="bg-white/15 text-white border-white/25 backdrop-blur-sm hidden sm:inline-flex">
+            {slideTypeLabels[slide.type] || slide.type}
+          </Badge>
         </div>
-      </div>
+      </header>
 
-      <div className="flex-1 flex items-center justify-center px-8 py-12 overflow-hidden">
-        <div className="max-w-4xl w-full space-y-6">
-          {slide?.type === "title" ? (
-            <div className="text-center space-y-4">
-              <h1 className="text-5xl sm:text-6xl font-bold tracking-tight leading-tight">
+      <main className="relative flex-1 flex items-center justify-center px-8 py-10 overflow-hidden">
+        <div key={currentSlide} className="max-w-5xl w-full animate-rise">
+          {slide.type === "title" ? (
+            <div className="text-center space-y-5">
+              <h1 className="font-display text-5xl sm:text-7xl font-bold tracking-tight leading-[1.05] text-balance">
                 {slide.content}
               </h1>
               {slide.sub && (
-                <p className="text-2xl text-muted-foreground">{slide.sub}</p>
+                <p className="text-2xl sm:text-3xl text-white/85 leading-snug max-w-3xl mx-auto">
+                  {slide.sub}
+                </p>
               )}
             </div>
-          ) : slide?.type === "objective" ? (
-            <div className="space-y-4">
-              <Badge variant="outline" className="text-sm">
+          ) : slide.type === "objective" ? (
+            <div className="space-y-5">
+              <Badge className="bg-white/15 text-white border-white/25 backdrop-blur-sm text-sm px-3 py-1">
                 Learning Objective
               </Badge>
-              <p className="text-3xl sm:text-4xl font-medium leading-snug">
+              <p className="font-display text-3xl sm:text-5xl font-semibold leading-[1.2] text-balance">
                 {slide.content}
               </p>
-              {slide.sub && (
-                <p className="text-lg text-muted-foreground">{slide.sub}</p>
-              )}
+              {slide.sub && <p className="text-xl text-white/75 capitalize">{slide.sub}</p>}
             </div>
-          ) : slide?.type === "vocabulary" ? (
-            <div className="space-y-4">
-              <Badge variant="outline" className="text-sm">
+          ) : slide.type === "vocabulary" ? (
+            <div className="space-y-5">
+              <Badge className="bg-white/15 text-white border-white/25 backdrop-blur-sm text-sm px-3 py-1">
                 Vocabulary
               </Badge>
-              <div className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 {slide.content.split("\n").map((line, i) => (
-                  <div key={i} className="rounded-lg bg-muted px-6 py-4">
-                    <p className="text-2xl font-medium">{line.split(" — ")[0]}</p>
-                    <p className="text-lg text-muted-foreground mt-1">
-                      {line.split(" — ")[1]}
-                    </p>
+                  <div
+                    key={i}
+                    className="rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 px-6 py-4"
+                  >
+                    <p className="font-display text-2xl font-bold">{line.split(" — ")[0]}</p>
+                    <p className="text-lg text-white/85 mt-1 leading-snug">{line.split(" — ")[1]}</p>
                   </div>
                 ))}
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
-              {slideTypeLabels[slide?.type || ""] && (
-                <Badge variant="outline" className="text-sm">
-                  {slideTypeLabels[slide?.type || ""]}
+            <div className="space-y-5">
+              {slideTypeLabels[slide.type] && (
+                <Badge className="bg-white/15 text-white border-white/25 backdrop-blur-sm text-sm px-3 py-1">
+                  {slideTypeLabels[slide.type]}
                 </Badge>
               )}
-              <div className="text-2xl sm:text-3xl leading-relaxed whitespace-pre-line">
-                {slide?.content}
+              <div className="font-display text-2xl sm:text-4xl leading-[1.45] whitespace-pre-line text-balance">
+                {slide.content}
               </div>
-              {slide?.sub && (
-                <p className="text-lg text-muted-foreground">{slide.sub}</p>
-              )}
+              {slide.sub && <p className="text-xl text-white/75">{slide.sub}</p>}
             </div>
           )}
         </div>
-      </div>
+      </main>
 
-      <div className="flex items-center justify-between px-6 py-4 border-t border-border shrink-0">
+      <footer className="relative flex items-center justify-between px-6 py-4 shrink-0">
         <Button
           variant="outline"
           size="lg"
           onClick={goPrev}
           disabled={currentSlide === 0}
+          className="border-white/35 text-white hover:bg-white/15 hover:text-white disabled:opacity-30"
         >
           <ArrowLeft className="size-4" />
           Previous
         </Button>
 
-        <div className="flex gap-1">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentSlide(i)}
-              className={`size-2 rounded-full transition-colors ${
-                i === currentSlide ? "bg-primary" : "bg-muted"
-              }`}
-            />
-          ))}
+        <div className="hidden md:flex items-center gap-2 text-xs text-white/60">
+          <kbd className="rounded-md bg-white/15 border border-white/25 px-2 py-1 font-mono">←</kbd>
+          <kbd className="rounded-md bg-white/15 border border-white/25 px-2 py-1 font-mono">→</kbd>
+          <span>navigate</span>
+          <kbd className="rounded-md bg-white/15 border border-white/25 px-2 py-1 font-mono">Esc</kbd>
+          <span>exit</span>
         </div>
 
-        <Button
-          size="lg"
-          onClick={goNext}
-          disabled={currentSlide === totalSlides - 1}
-        >
-          Next
-          <ArrowRight className="size-4" />
-        </Button>
-      </div>
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:flex gap-1.5">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setCurrentSlide(i)}
+                aria-label={`Go to slide ${i + 1}`}
+                className={`h-2 rounded-full transition-all duration-200 ${
+                  i === currentSlide ? "w-6 bg-white" : "w-2 bg-white/35 hover:bg-white/60"
+                }`}
+              />
+            ))}
+          </div>
+          <Button
+            size="lg"
+            onClick={goNext}
+            disabled={currentSlide === totalSlides - 1}
+            className="bg-white text-gray-900 hover:bg-white/90 font-semibold disabled:opacity-30"
+          >
+            Next
+            <ArrowRight className="size-4" />
+          </Button>
+        </div>
+      </footer>
     </div>
   )
 }

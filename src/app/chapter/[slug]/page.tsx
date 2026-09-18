@@ -1,12 +1,14 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { Clock, BookOpen, ArrowRight, HelpCircle, Lightbulb, Wrench, Rocket, MessageSquareText } from "lucide-react"
-import { AppShell } from "@/components/layout/AppShell"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Clock, BookOpen, ArrowRight, Target } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import CaseStudyActivity from "@/components/activities/CaseStudyActivity"
+import { Card, CardContent } from "@/components/ui/card"
+import { AppShell } from "@/components/layout/AppShell"
 import { chapters } from "@/content/chapters"
+import { getChapterTheme } from "@/lib/chapter-colors"
+import { ChapterHeroIllustration } from "@/components/chapter/ChapterHeroIllustration"
+import { ChapterTabs } from "@/components/chapter/ChapterTabs"
 
 export function generateStaticParams() {
   return chapters.map((ch) => ({ slug: ch.slug }))
@@ -24,61 +26,88 @@ export default async function ChapterPage({
     notFound()
   }
 
+  const theme = getChapterTheme(chapter.slug)
   const firstLesson = chapter.lessons[0]
 
   return (
     <AppShell>
-      <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto space-y-8">
-        <div>
-          <Badge variant="outline" className="mb-2">
+      <div data-chapter={theme.key} className="max-w-5xl mx-auto pb-16">
+      <section
+        className="relative overflow-hidden text-white"
+        style={{ background: `linear-gradient(120deg, ${theme.color}, ${theme.deep})` }}
+      >
+        <div className="dot-grid absolute inset-0" />
+        <span className="absolute -top-8 right-4 font-display font-bold text-[150px] leading-none text-white/10 select-none hidden sm:block">
+          {String(chapter.number).padStart(2, "0")}
+        </span>
+        <ChapterHeroIllustration slug={slug} />
+        <div className="relative p-6 sm:p-10 lg:pr-[22rem]">
+          <Badge className="bg-white/15 text-white border-white/25 backdrop-blur-sm mb-4">
             Chapter {chapter.number} · Semester {chapter.semester}
           </Badge>
-          <h1 className="text-2xl font-bold tracking-tight">{chapter.title}</h1>
-          <p className="text-lg text-muted-foreground mt-1 italic">
-            {chapter.question}
+          <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight leading-[1.08] text-balance">
+            {chapter.title}
+          </h1>
+          <p className="mt-3 text-xl sm:text-2xl font-display italic text-white/90 max-w-2xl leading-snug">
+            &ldquo;{chapter.question}&rdquo;
           </p>
+          <div className="flex flex-wrap items-center gap-2 mt-5 text-sm">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 px-3 py-1.5">
+              <Clock className="size-3.5" />
+              {chapter.estimatedTime}
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 px-3 py-1.5">
+              <BookOpen className="size-3.5" />
+              {chapter.lessons.length} lessons
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 px-3 py-1.5 capitalize">
+              {chapter.textType} text
+            </span>
+          </div>
         </div>
+      </section>
 
-        <Card>
-          <CardContent className="py-6 space-y-4">
-            <p className="text-sm leading-relaxed">{chapter.overview}</p>
-            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1.5">
-                <Clock className="size-4" />
-                <span>{chapter.estimatedTime}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <BookOpen className="size-4" />
-                <span>{chapter.lessons.length} lessons</span>
-              </div>
+      <div className="p-4 sm:p-6 lg:p-8 space-y-8">
+        <Card className="border-border/70">
+          <CardContent className="py-5 space-y-4">
+            <p className="leading-relaxed">{chapter.overview}</p>
+            <div className="flex flex-wrap gap-2">
+              {chapter.skills.map((skill) => (
+                <Badge key={skill} variant="secondary" className="capitalize">
+                  {skill}
+                </Badge>
+              ))}
+              {chapter.languageFocus.map((lf) => (
+                <Badge key={lf} variant="outline">
+                  {lf}
+                </Badge>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-3 pt-1">
+              {firstLesson && (
+                <Button render={<Link href={`/chapter/${chapter.slug}/lesson/${firstLesson.slug}`} />} size="lg" className="shadow-md">
+                  Start Chapter
+                  <ArrowRight className="size-4" />
+                </Button>
+              )}
+              <Button render={<Link href="/curriculum" />} variant="outline" size="lg">
+                View Curriculum Alignment
+              </Button>
             </div>
           </CardContent>
         </Card>
 
-        <div className="flex flex-wrap gap-2">
-          {chapter.skills.map((skill) => (
-            <Badge key={skill} variant="secondary" className="capitalize">
-              {skill}
-            </Badge>
-          ))}
-          <Badge variant="outline" className="capitalize">
-            {chapter.textType} text
-          </Badge>
-          {chapter.languageFocus.map((lf) => (
-            <Badge key={lf} variant="outline">
-              {lf}
-            </Badge>
-          ))}
-        </div>
-
-        <div>
-          <h2 className="text-lg font-semibold mb-4">Learning Objectives</h2>
+        <section>
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+            <Target className="size-4 text-chapter" />
+            Learning Objectives
+          </h2>
           <Card>
             <CardContent className="py-4">
-              <ul className="space-y-2">
+              <ul className="space-y-2.5">
                 {chapter.objectives.map((obj) => (
                   <li key={obj.id} className="flex gap-3 text-sm">
-                    <Badge variant="outline" className="shrink-0 text-xs mt-0.5 capitalize">
+                    <Badge variant="outline" className="shrink-0 text-xs mt-0.5 capitalize border-chapter/40 text-chapter">
                       {obj.level}
                     </Badge>
                     <span>{obj.description}</span>
@@ -87,157 +116,10 @@ export default async function ChapterPage({
               </ul>
             </CardContent>
           </Card>
-        </div>
+        </section>
 
-        <div>
-          <h2 className="text-lg font-semibold mb-4">Lessons</h2>
-          <div className="space-y-3">
-            {chapter.lessons.map((lesson) => (
-              <Link
-                key={lesson.id}
-                href={`/chapter/${chapter.slug}/lesson/${lesson.slug}`}
-              >
-                <Card className="transition-colors hover:bg-muted/50 cursor-pointer">
-                  <CardContent className="flex items-center justify-between py-4 gap-4">
-                    <div className="flex items-center gap-4 min-w-0">
-                      <div className="flex items-center justify-center size-10 rounded-lg bg-primary/10 shrink-0 text-sm font-bold text-primary">
-                        {lesson.number}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-medium truncate">{lesson.title}</p>
-                        <p className="text-sm text-muted-foreground truncate">
-                          {lesson.description}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                          <Clock className="size-3" />
-                          <span>{lesson.duration} min</span>
-                          <span>·</span>
-                          <span>{lesson.activities.length} activities</span>
-                        </div>
-                      </div>
-                    </div>
-                    <ArrowRight className="size-4 text-muted-foreground shrink-0" />
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <HelpCircle className="size-5 text-primary" />
-            Case Study
-          </h2>
-          <CaseStudyActivity content={chapter.caseStudy} />
-        </div>
-
-        <div>
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Lightbulb className="size-5 text-amber-500" />
-            Chapter Evaluation
-          </h2>
-          <div className="space-y-3">
-            {chapter.evaluation.map((activity) => (
-              <Link key={activity.id} href={`/assessment/${activity.id}`}>
-                <Card className="transition-colors hover:bg-muted/50 cursor-pointer">
-                  <CardContent className="flex items-center justify-between py-4 gap-4">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge variant="outline" className="text-xs">
-                          {activity.type}
-                        </Badge>
-                        {activity.duration && (
-                          <span className="text-xs text-muted-foreground">{activity.duration} min</span>
-                        )}
-                      </div>
-                      <p className="font-medium truncate">{activity.title}</p>
-                      <p className="text-sm text-muted-foreground truncate">{activity.instruction}</p>
-                    </div>
-                    <ArrowRight className="size-4 text-muted-foreground shrink-0" />
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Wrench className="size-4 text-blue-500" />
-                Remedial Activities
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {chapter.remedial.map((activity) => (
-                <Link
-                  key={activity.id}
-                  href={`/activity/${activity.id}`}
-                  className="block rounded-lg border p-3 text-sm hover:bg-muted transition-colors"
-                >
-                  <p className="font-medium">{activity.title}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{activity.type}</p>
-                </Link>
-              ))}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Rocket className="size-4 text-green-500" />
-                Enrichment Activities
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {chapter.enrichment.map((activity) => (
-                <Link
-                  key={activity.id}
-                  href={`/activity/${activity.id}`}
-                  className="block rounded-lg border p-3 text-sm hover:bg-muted transition-colors"
-                >
-                  <p className="font-medium">{activity.title}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{activity.type}</p>
-                </Link>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
-
-        <div>
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <MessageSquareText className="size-5 text-violet-500" />
-            Chapter Reflection
-          </h2>
-          <Card>
-            <CardContent className="py-4">
-              <div className="space-y-3">
-                {chapter.reflection.flatMap((r) => r.prompts).map((prompt) => (
-                  <div key={prompt.id} className="flex gap-3 text-sm">
-                    <Badge variant="outline" className="shrink-0 text-xs mt-0.5 capitalize">
-                      {prompt.type.replace("-", " ")}
-                    </Badge>
-                    <span>{prompt.question}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="flex flex-wrap gap-3 border-t pt-6">
-          {firstLesson && (
-            <Button render={<Link href={`/chapter/${chapter.slug}/lesson/${firstLesson.slug}`} />}>
-              Start Chapter
-              <ArrowRight className="size-4" />
-            </Button>
-          )}
-          <Button render={<Link href="/curriculum" />} variant="outline">
-            View Curriculum Alignment
-          </Button>
-        </div>
+        <ChapterTabs chapter={chapter} />
+      </div>
       </div>
     </AppShell>
   )

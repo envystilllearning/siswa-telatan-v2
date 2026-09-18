@@ -1,14 +1,17 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { type MatchingContent } from "@/types/content";
+import Burst from "./Burst";
 
 interface MatchingGameProps {
   content: MatchingContent;
 }
+
+const PAIR_COLORS = ["#F97316", "#3B82F6", "#22C55E", "#F59E0B", "#EC4899", "#8B5CF6"];
 
 function shuffleArray<T>(items: T[]): T[] {
   const arr = [...items];
@@ -83,80 +86,102 @@ export default function MatchingGame({ content }: MatchingGameProps) {
         Click a left item, then click its matching right item.
       </p>
 
-      <div className="grid grid-cols-[1fr_auto_1fr] gap-4">
-        <div className="space-y-2">
-          <h4 className="text-sm font-medium text-muted-foreground mb-2">Match these</h4>
-          {content.pairs.map((pair) => {
-            const matchId = matches[pair.id];
-            const isSelected = selectedLeft === pair.id;
-            const isCorrectMatch = submitted && matchId === pair.id;
+      <div className="relative">
+        <Burst active={submitted && content.pairs.every((p) => matches[p.id] === p.id)} />
+        <div className="grid grid-cols-[1fr_auto_1fr] gap-4">
+          <div className="space-y-2">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Match these</h4>
+            {content.pairs.map((pair, pairIndex) => {
+              const matchId = matches[pair.id];
+              const isSelected = selectedLeft === pair.id;
+              const isCorrectMatch = submitted && matchId === pair.id;
+              const showShake = submitted && matchId && !isCorrectMatch;
 
-            return (
-              <button
-                key={pair.id}
-                type="button"
-                disabled={submitted}
-                onClick={() => handleLeftClick(pair.id)}
-                className="w-full text-left"
-              >
-                <Card className={`p-3 transition-all cursor-pointer hover:bg-muted ${isSelected ? "border-primary ring-1 ring-primary" : ""} ${isCorrectMatch ? "border-green-500" : ""} ${submitted && matchId && !isCorrectMatch ? "border-red-500" : ""}`}>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm">{pair.left}</span>
-                    {matchId && (
-                      <div className="flex items-center gap-1">
-                        {submitted ? (
-                          <Badge variant="outline" className={isCorrectMatch ? "bg-green-500/10 text-green-700 border-green-500 text-xs" : "bg-red-500/10 text-red-700 border-red-500 text-xs"}>
-                            {isCorrectMatch ? "Correct" : "Wrong"}
-                          </Badge>
-                        ) : (
-                          <button type="button" onClick={(e) => { e.stopPropagation(); handleUnmatch(pair.id); }} className="text-xs text-muted-foreground hover:text-foreground">
-                            ✕
-                          </button>
+              return (
+                <button
+                  key={pair.id}
+                  type="button"
+                  disabled={submitted}
+                  onClick={() => handleLeftClick(pair.id)}
+                  className="w-full text-left"
+                >
+                  <Card className={`rounded-xl p-3 transition-all cursor-pointer hover:bg-muted ${isSelected ? "border-primary ring-2 ring-primary" : ""} ${isCorrectMatch ? "border-green-500 bg-green-500/10" : ""} ${showShake ? "border-red-500 bg-red-500/10 animate-shake" : ""}`}>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="flex items-center gap-2 text-sm">
+                        {matchId && (
+                          <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: PAIR_COLORS[pairIndex % PAIR_COLORS.length] }} />
                         )}
-                      </div>
-                    )}
-                  </div>
-                </Card>
-              </button>
-            );
-          })}
-        </div>
+                        {pair.left}
+                      </span>
+                      {matchId && (
+                        <div className="flex items-center gap-1">
+                          {submitted ? (
+                            isCorrectMatch ? (
+                              <span className="animate-pop flex size-6 shrink-0 items-center justify-center rounded-full bg-green-500 text-white">
+                                <Check className="size-4" />
+                              </span>
+                            ) : (
+                              <span className="animate-pop flex size-6 shrink-0 items-center justify-center rounded-full bg-red-500 text-white">
+                                <X className="size-4" />
+                              </span>
+                            )
+                          ) : (
+                            <button type="button" onClick={(e) => { e.stopPropagation(); handleUnmatch(pair.id); }} className="text-xs text-muted-foreground hover:text-foreground">
+                              <X className="size-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                </button>
+              );
+            })}
+          </div>
 
-        <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
-          {content.pairs.map((pair) => (
-            <div key={pair.id} className="h-[52px] flex items-center">
-              {matches[pair.id] ? (
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              ) : (
-                <div className="h-4 w-4" />
-              )}
-            </div>
-          ))}
-        </div>
+          <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+            {content.pairs.map((pair) => (
+              <div key={pair.id} className="h-[52px] flex items-center">
+                {matches[pair.id] ? (
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                ) : (
+                  <div className="h-4 w-4" />
+                )}
+              </div>
+            ))}
+          </div>
 
-        <div className="space-y-2">
-          <h4 className="text-sm font-medium text-muted-foreground mb-2">With these</h4>
-          {shuffledRight.map((item) => {
-            const isSelected = selectedRight === item.id;
-            const matchedByLeft = Object.entries(matches).find((entry) => entry[1] === item.id);
-            const isCorrectMatch = submitted && matchedByLeft && correctMap[matchedByLeft[0]] === item.id;
+          <div className="space-y-2">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">With these</h4>
+            {shuffledRight.map((item) => {
+              const isSelected = selectedRight === item.id;
+              const matchedByLeft = Object.entries(matches).find((entry) => entry[1] === item.id);
+              const isCorrectMatch = submitted && matchedByLeft && correctMap[matchedByLeft[0]] === item.id;
+              const showShake = submitted && matchedByLeft && !isCorrectMatch;
+              const pairIndex = matchedByLeft ? content.pairs.findIndex((p) => p.id === matchedByLeft[0]) : -1;
 
-            return (
-              <button
-                key={item.id}
-                type="button"
-                disabled={submitted}
-                onClick={() => handleRightClick(item.id)}
-                className="w-full text-left"
-              >
-                <Card className={`p-3 transition-all cursor-pointer hover:bg-muted ${isSelected ? "border-primary ring-1 ring-primary" : ""} ${isCorrectMatch ? "border-green-500" : ""} ${submitted && matchedByLeft && !isCorrectMatch ? "border-red-500" : ""}`}>
-                  <span className="text-sm">{item.text}</span>
-                </Card>
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  disabled={submitted}
+                  onClick={() => handleRightClick(item.id)}
+                  className="w-full text-left"
+                >
+                  <Card className={`rounded-xl p-3 transition-all cursor-pointer hover:bg-muted ${isSelected ? "border-primary ring-2 ring-primary" : ""} ${isCorrectMatch ? "border-green-500 bg-green-500/10" : ""} ${showShake ? "border-red-500 bg-red-500/10 animate-shake" : ""}`}>
+                    <span className="flex items-center gap-2 text-sm">
+                      {pairIndex !== -1 && (
+                        <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: PAIR_COLORS[pairIndex % PAIR_COLORS.length] }} />
+                      )}
+                      {item.text}
+                    </span>
+                  </Card>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -173,7 +198,7 @@ export default function MatchingGame({ content }: MatchingGameProps) {
       </div>
 
       {submitted && (
-        <Card className="p-4 bg-muted/50">
+        <Card className="animate-rise rounded-xl border-l-4 border-primary bg-muted/60 p-4">
           <p className="text-sm">
             <span className="font-semibold">Explanation:</span> {content.explanation}
           </p>

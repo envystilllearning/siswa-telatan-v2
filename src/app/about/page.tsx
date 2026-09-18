@@ -7,7 +7,7 @@ export default function AboutPage() {
     <AppShell>
       <div className="p-4 sm:p-6 lg:p-8 max-w-3xl mx-auto space-y-8">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">About Siswa Telatan</h1>
+          <h1 className="font-display text-2xl font-bold tracking-tight">About Siswa Telatan</h1>
           <p className="text-muted-foreground mt-1">
             An interactive English teaching system for the classroom
           </p>
@@ -31,7 +31,7 @@ export default function AboutPage() {
 
         <Card>
           <CardContent className="py-6 space-y-4 text-sm leading-relaxed">
-            <h2 className="text-lg font-semibold">Curriculum Alignment</h2>
+            <h2 className="font-display text-base font-semibold">Curriculum Alignment</h2>
             <p>
               This application is aligned with the <strong>Kurikulum Merdeka</strong> for
               English Language Education, specifically targeting <strong>Fase E</strong> (Grade 10 / Class 10).
@@ -56,7 +56,7 @@ export default function AboutPage() {
 
         <Card>
           <CardContent className="py-6 space-y-4 text-sm leading-relaxed">
-            <h2 className="text-lg font-semibold">Disclaimer</h2>
+            <h2 className="font-display text-base font-semibold">Disclaimer</h2>
             <p>
               Siswa Telatan is independently developed and is not officially affiliated
               with, endorsed by, or connected to the Indonesian Ministry of Education
@@ -77,7 +77,7 @@ export default function AboutPage() {
 
         <Card>
           <CardContent className="py-6 space-y-4 text-sm leading-relaxed">
-            <h2 className="text-lg font-semibold">Features</h2>
+            <h2 className="font-display text-base font-semibold">Features</h2>
             <ul className="space-y-2">
               <li className="flex gap-2">
                 <span className="shrink-0">•</span>
