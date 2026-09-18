@@ -4,11 +4,10 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { type MatchingContent, type AnswerKey } from "@/types/content";
+import { type MatchingContent } from "@/types/content";
 
 interface MatchingGameProps {
   content: MatchingContent;
-  answerKey: AnswerKey;
 }
 
 function shuffleArray<T>(items: T[]): T[] {
@@ -20,7 +19,7 @@ function shuffleArray<T>(items: T[]): T[] {
   return arr;
 }
 
-export default function MatchingGame({ content, answerKey }: MatchingGameProps) {
+export default function MatchingGame({ content }: MatchingGameProps) {
   const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
   const [selectedRight, setSelectedRight] = useState<string | null>(null);
   const [matches, setMatches] = useState<Record<string, string>>({});
@@ -86,7 +85,7 @@ export default function MatchingGame({ content, answerKey }: MatchingGameProps) 
 
       <div className="grid grid-cols-[1fr_auto_1fr] gap-4">
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-muted-foreground mb-2">Items</h4>
+          <h4 className="text-sm font-medium text-muted-foreground mb-2">Match these</h4>
           {content.pairs.map((pair) => {
             const matchId = matches[pair.id];
             const isSelected = selectedLeft === pair.id;
@@ -138,10 +137,10 @@ export default function MatchingGame({ content, answerKey }: MatchingGameProps) 
         </div>
 
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-muted-foreground mb-2">Definitions</h4>
+          <h4 className="text-sm font-medium text-muted-foreground mb-2">With these</h4>
           {shuffledRight.map((item) => {
             const isSelected = selectedRight === item.id;
-            const matchedByLeft = Object.entries(matches).find(([_, rightId]) => rightId === item.id);
+            const matchedByLeft = Object.entries(matches).find((entry) => entry[1] === item.id);
             const isCorrectMatch = submitted && matchedByLeft && correctMap[matchedByLeft[0]] === item.id;
 
             return (

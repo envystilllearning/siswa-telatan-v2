@@ -1,17 +1,16 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { type OrderingContent, type AnswerKey } from "@/types/content";
+import { type OrderingContent } from "@/types/content";
 
 interface OrderingActivityProps {
   content: OrderingContent;
-  answerKey: AnswerKey;
 }
 
-export default function OrderingActivity({ content, answerKey }: OrderingActivityProps) {
+export default function OrderingActivity({ content }: OrderingActivityProps) {
   const [orderedIds, setOrderedIds] = useState<string[]>(() =>
     [...content.items].sort(() => Math.random() - 0.5).map((item) => item.id)
   );

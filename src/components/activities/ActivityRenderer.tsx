@@ -19,38 +19,38 @@ interface ActivityRendererProps {
   activity: Activity;
 }
 
-export default function ActivityRenderer({ activity }: ActivityRendererProps) {
+export function ActivityRenderer({ activity }: ActivityRendererProps) {
   const [revealed, setRevealed] = useState(false);
 
   function renderActivity() {
     switch (activity.type) {
       case "multiple-choice": {
         const content = activity.content as import("@/types/content").MultipleChoiceContent;
-        return <MultipleChoice content={content} answerKey={activity.answerKey} />;
+        return <MultipleChoice content={content} />;
       }
       case "true-false": {
         const content = activity.content as import("@/types/content").TrueFalseContent;
-        return <TrueFalse content={content} answerKey={activity.answerKey} />;
+        return <TrueFalse content={content} />;
       }
       case "matching": {
         const content = activity.content as import("@/types/content").MatchingContent;
-        return <MatchingGame content={content} answerKey={activity.answerKey} />;
+        return <MatchingGame content={content} />;
       }
       case "fill-blank": {
         const content = activity.content as import("@/types/content").FillBlankContent;
-        return <FillBlank content={content} answerKey={activity.answerKey} />;
+        return <FillBlank content={content} />;
       }
       case "ordering": {
         const content = activity.content as import("@/types/content").OrderingContent;
-        return <OrderingActivity content={content} answerKey={activity.answerKey} />;
+        return <OrderingActivity content={content} />;
       }
       case "text-analysis": {
         const content = activity.content as import("@/types/content").TextAnalysisContent;
-        return <TextAnalysisActivity content={content} answerKey={activity.answerKey} />;
+        return <TextAnalysisActivity content={content} />;
       }
       case "vocabulary": {
         const content = activity.content as import("@/types/content").VocabularyContent;
-        return <VocabularyActivity content={content} answerKey={activity.answerKey} />;
+        return <VocabularyActivity content={content} />;
       }
       case "discussion": {
         const content = activity.content as import("@/types/content").DiscussionContent;
@@ -74,16 +74,11 @@ export default function ActivityRenderer({ activity }: ActivityRendererProps) {
   }
 
   return (
-    <div className="space-y-4">
-      {activity.title && (
-        <h2 className="text-xl font-bold">{activity.title}</h2>
-      )}
-      {activity.instruction && (
-        <p className="text-sm text-muted-foreground">{activity.instruction}</p>
-      )}
-      {activity.duration && (
-        <p className="text-xs text-muted-foreground">Estimated time: {activity.duration} min</p>
-      )}
+    <div className="space-y-6">
+      <div className="space-y-1">
+        <h1 className="text-2xl font-bold tracking-tight">{activity.title}</h1>
+        <p className="text-muted-foreground">{activity.instruction}</p>
+      </div>
       {renderActivity()}
       <AnswerReveal
         answerKey={activity.answerKey}

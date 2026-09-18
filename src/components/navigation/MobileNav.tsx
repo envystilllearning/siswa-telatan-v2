@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, BookOpen, Trophy, Palette, Search, Info, Menu } from "lucide-react"
+import { Home, BookOpen, Trophy, Palette, Search, Info, Menu, Wrench } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -19,6 +19,7 @@ const links = [
   { href: "/curriculum", label: "Curriculum", icon: BookOpen },
   { href: "/semester/1", label: "Semester 1 (Sports)", icon: Trophy },
   { href: "/semester/2", label: "Semester 2 (Arts)", icon: Palette },
+  { href: "/tools", label: "Classroom Tools", icon: Wrench },
   { href: "/search", label: "Search", icon: Search },
   { href: "/about", label: "About", icon: Info },
 ]

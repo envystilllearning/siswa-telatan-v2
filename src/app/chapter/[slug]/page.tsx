@@ -1,10 +1,11 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { Clock, BookOpen, ArrowRight } from "lucide-react"
+import { Clock, BookOpen, ArrowRight, HelpCircle, Lightbulb, Wrench, Rocket, MessageSquareText } from "lucide-react"
 import { AppShell } from "@/components/layout/AppShell"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import CaseStudyActivity from "@/components/activities/CaseStudyActivity"
 import { chapters } from "@/content/chapters"
 
 export function generateStaticParams() {
@@ -30,7 +31,7 @@ export default async function ChapterPage({
       <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto space-y-8">
         <div>
           <Badge variant="outline" className="mb-2">
-            Chapter {chapter.number}
+            Chapter {chapter.number} · Semester {chapter.semester}
           </Badge>
           <h1 className="text-2xl font-bold tracking-tight">{chapter.title}</h1>
           <p className="text-lg text-muted-foreground mt-1 italic">
@@ -56,11 +57,13 @@ export default async function ChapterPage({
 
         <div className="flex flex-wrap gap-2">
           {chapter.skills.map((skill) => (
-            <Badge key={skill} variant="secondary">
+            <Badge key={skill} variant="secondary" className="capitalize">
               {skill}
             </Badge>
           ))}
-          <Badge variant="outline">{chapter.textType}</Badge>
+          <Badge variant="outline" className="capitalize">
+            {chapter.textType} text
+          </Badge>
           {chapter.languageFocus.map((lf) => (
             <Badge key={lf} variant="outline">
               {lf}
@@ -75,7 +78,7 @@ export default async function ChapterPage({
               <ul className="space-y-2">
                 {chapter.objectives.map((obj) => (
                   <li key={obj.id} className="flex gap-3 text-sm">
-                    <Badge variant="outline" className="shrink-0 text-xs mt-0.5">
+                    <Badge variant="outline" className="shrink-0 text-xs mt-0.5 capitalize">
                       {obj.level}
                     </Badge>
                     <span>{obj.description}</span>
@@ -121,7 +124,110 @@ export default async function ChapterPage({
           </div>
         </div>
 
-        <div className="flex gap-3">
+        <div>
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <HelpCircle className="size-5 text-primary" />
+            Case Study
+          </h2>
+          <CaseStudyActivity content={chapter.caseStudy} />
+        </div>
+
+        <div>
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <Lightbulb className="size-5 text-amber-500" />
+            Chapter Evaluation
+          </h2>
+          <div className="space-y-3">
+            {chapter.evaluation.map((activity) => (
+              <Link key={activity.id} href={`/assessment/${activity.id}`}>
+                <Card className="transition-colors hover:bg-muted/50 cursor-pointer">
+                  <CardContent className="flex items-center justify-between py-4 gap-4">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge variant="outline" className="text-xs">
+                          {activity.type}
+                        </Badge>
+                        {activity.duration && (
+                          <span className="text-xs text-muted-foreground">{activity.duration} min</span>
+                        )}
+                      </div>
+                      <p className="font-medium truncate">{activity.title}</p>
+                      <p className="text-sm text-muted-foreground truncate">{activity.instruction}</p>
+                    </div>
+                    <ArrowRight className="size-4 text-muted-foreground shrink-0" />
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Wrench className="size-4 text-blue-500" />
+                Remedial Activities
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {chapter.remedial.map((activity) => (
+                <Link
+                  key={activity.id}
+                  href={`/activity/${activity.id}`}
+                  className="block rounded-lg border p-3 text-sm hover:bg-muted transition-colors"
+                >
+                  <p className="font-medium">{activity.title}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{activity.type}</p>
+                </Link>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Rocket className="size-4 text-green-500" />
+                Enrichment Activities
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {chapter.enrichment.map((activity) => (
+                <Link
+                  key={activity.id}
+                  href={`/activity/${activity.id}`}
+                  className="block rounded-lg border p-3 text-sm hover:bg-muted transition-colors"
+                >
+                  <p className="font-medium">{activity.title}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{activity.type}</p>
+                </Link>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div>
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            <MessageSquareText className="size-5 text-violet-500" />
+            Chapter Reflection
+          </h2>
+          <Card>
+            <CardContent className="py-4">
+              <div className="space-y-3">
+                {chapter.reflection.flatMap((r) => r.prompts).map((prompt) => (
+                  <div key={prompt.id} className="flex gap-3 text-sm">
+                    <Badge variant="outline" className="shrink-0 text-xs mt-0.5 capitalize">
+                      {prompt.type.replace("-", " ")}
+                    </Badge>
+                    <span>{prompt.question}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="flex flex-wrap gap-3 border-t pt-6">
           {firstLesson && (
             <Button render={<Link href={`/chapter/${chapter.slug}/lesson/${firstLesson.slug}`} />}>
               Start Chapter

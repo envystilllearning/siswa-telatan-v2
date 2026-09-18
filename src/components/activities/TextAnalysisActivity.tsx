@@ -4,14 +4,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { type TextAnalysisContent, type AnswerKey } from "@/types/content";
+import { type TextAnalysisContent } from "@/types/content";
 
 interface TextAnalysisActivityProps {
   content: TextAnalysisContent;
-  answerKey: AnswerKey;
 }
 
-export default function TextAnalysisActivity({ content, answerKey }: TextAnalysisActivityProps) {
+export default function TextAnalysisActivity({ content }: TextAnalysisActivityProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
 

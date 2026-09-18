@@ -4,14 +4,13 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { type FillBlankContent, type AnswerKey } from "@/types/content";
+import { type FillBlankContent } from "@/types/content";
 
 interface FillBlankProps {
   content: FillBlankContent;
-  answerKey: AnswerKey;
 }
 
-export default function FillBlank({ content, answerKey }: FillBlankProps) {
+export default function FillBlank({ content }: FillBlankProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
 

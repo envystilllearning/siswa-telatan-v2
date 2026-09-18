@@ -4,14 +4,13 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { type VocabularyContent, type AnswerKey } from "@/types/content";
+import { type VocabularyContent } from "@/types/content";
 
 interface VocabularyActivityProps {
   content: VocabularyContent;
-  answerKey: AnswerKey;
 }
 
-export default function VocabularyActivity({ content, answerKey }: VocabularyActivityProps) {
+export default function VocabularyActivity({ content }: VocabularyActivityProps) {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [showDefinition, setShowDefinition] = useState(false);
   const [userDefinition, setUserDefinition] = useState("");

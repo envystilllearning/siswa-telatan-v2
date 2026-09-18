@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ChevronRight } from "lucide-react"
 import { MobileNav } from "@/components/navigation/MobileNav"
@@ -10,6 +11,7 @@ const routeLabels: Record<string, string> = {
   "/curriculum": "Curriculum",
   "/semester/1": "Semester 1 — Sports",
   "/semester/2": "Semester 2 — Arts",
+  "/tools": "Classroom Tools",
   "/search": "Search",
   "/about": "About",
 }
@@ -41,9 +43,9 @@ export function Header() {
             {i === breadcrumbs.length - 1 ? (
               <span className="font-medium text-foreground">{crumb.label}</span>
             ) : (
-              <a href={crumb.href} className="hover:text-foreground transition-colors">
+              <Link href={crumb.href} className="hover:text-foreground transition-colors">
                 {crumb.label}
-              </a>
+              </Link>
             )}
           </span>
         ))}

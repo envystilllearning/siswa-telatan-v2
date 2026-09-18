@@ -4,14 +4,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { type MultipleChoiceContent, type AnswerKey } from "@/types/content";
+import { type MultipleChoiceContent } from "@/types/content";
 
 interface MultipleChoiceProps {
   content: MultipleChoiceContent;
-  answerKey: AnswerKey;
 }
 
-export default function MultipleChoice({ content, answerKey }: MultipleChoiceProps) {
+export default function MultipleChoice({ content }: MultipleChoiceProps) {
   const [selected, setSelected] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 

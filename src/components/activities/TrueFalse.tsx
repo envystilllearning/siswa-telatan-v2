@@ -4,14 +4,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { type TrueFalseContent, type AnswerKey } from "@/types/content";
+import { type TrueFalseContent } from "@/types/content";
 
 interface TrueFalseProps {
   content: TrueFalseContent;
-  answerKey: AnswerKey;
 }
 
-export default function TrueFalse({ content, answerKey }: TrueFalseProps) {
+export default function TrueFalse({ content }: TrueFalseProps) {
   const [answers, setAnswers] = useState<Record<string, boolean | null>>({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -47,7 +46,7 @@ export default function TrueFalse({ content, answerKey }: TrueFalseProps) {
                   size="sm"
                   onClick={() => handleSelect(statement.id, true)}
                   disabled={submitted}
-                  className={answer === true ? "min-w-20" : "min-w-20"}
+                  className="min-w-20"
                 >
                   True
                 </Button>
@@ -56,7 +55,7 @@ export default function TrueFalse({ content, answerKey }: TrueFalseProps) {
                   size="sm"
                   onClick={() => handleSelect(statement.id, false)}
                   disabled={submitted}
-                  className={answer === false ? "min-w-20" : "min-w-20"}
+                  className="min-w-20"
                 >
                   False
                 </Button>

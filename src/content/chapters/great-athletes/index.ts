@@ -76,20 +76,23 @@ export const greatAthletes: Chapter = {
       activities: [
         {
           id: "ga-l1-act-1",
-          type: "vocabulary",
+          type: "matching",
           title: "Adjective Brainstorm",
-          instruction: "Match each adjective in the box with the correct category: opinion, fact, or behavior.",
+          instruction: "Match each word with the correct category: fact, opinion, or behavior.",
           content: {
-            type: "vocabulary",
-            words: [
-              { word: "tall", definition: "fact — can be measured", example: "He is 190 cm tall." },
-              { word: "brilliant", definition: "opinion — a personal judgment", example: "She is a brilliant strategist." },
-              { word: "sprint", definition: "behavior — describes how someone acts", example: "She sprints to the finish line." },
+            type: "matching",
+            pairs: [
+              { id: "ab1", left: "tall (can be measured)", right: "fact" },
+              { id: "ab2", left: "brilliant (a personal judgment)", right: "opinion" },
+              { id: "ab3", left: "energetic (shows in actions)", right: "behavior" },
+              { id: "ab4", left: "25 years old (can be checked)", right: "fact" },
+              { id: "ab5", left: "amazing (a personal feeling)", right: "opinion" },
             ],
+            explanation: "Facts can be proven or measured. Opinions express personal feelings. Behavior describes how someone acts.",
           },
           answerKey: {
-            answers: { tall: "fact", brilliant: "opinion", sprint: "behavior" },
-            explanation: "Tall is a measurable fact. Brilliant is a subjective opinion. Sprint describes an action or behavior.",
+            answers: { ab1: "fact", ab2: "opinion", ab3: "behavior", ab4: "fact", ab5: "opinion" },
+            explanation: "Tall and 25 years old are measurable facts. Brilliant and amazing are subjective opinions. Energetic describes behavior.",
           },
           duration: 10,
           level: "remember",
@@ -196,13 +199,13 @@ export const greatAthletes: Chapter = {
             type: "text-analysis",
             text: "Coach Amir wakes up at 4:30 every morning. He drinks a protein shake before heading to the gym. He trains his athletes for three hours and then reviews their performance on video. He always encourages them to push harder but also knows when to rest them. His athletes respect him because he always leads by example.",
             questions: [
-              { id: "ta1-q1", question: "How many simple present verbs can you find in the text?", options: [{ id: "a", text: "5" }, { id: "b", text: "7" }, { id: "c", text: "9" }, { id: "d", text: "11" }], correctId: "c" },
+              { id: "ta1-q1", question: "Which of these verbs from the text is NOT in the simple present tense?", options: [{ id: "a", text: "trains" }, { id: "b", text: "reviews" }, { id: "c", text: "heading" }, { id: "d", text: "leads" }], correctId: "c" },
               { id: "ta1-q2", question: "What does 'wakes up at 4:30' tell us about Coach Amir?", options: [{ id: "a", text: "He is lazy" }, { id: "b", text: "He is disciplined" }, { id: "c", text: "He is tired" }, { id: "d", text: "He is new" }], correctId: "b" },
             ],
           },
           answerKey: {
             answers: { "ta1-q1": "c", "ta1-q2": "b" },
-            explanation: "The simple present verbs are: wakes, drinks, trains, reviews, encourages, knows, rests, respects, leads, heading (part of continuous form but contains present reference). The verb tells us about his daily routine, showing discipline.",
+            explanation: "'Heading' is a gerund (verb + -ing used as a noun), not a simple present verb. The simple present verbs in the text are: wakes, drinks, trains, reviews, encourages, knows, respect, and leads. The early wake-up time shows discipline and routine.",
           },
           duration: 15,
           level: "analyze",

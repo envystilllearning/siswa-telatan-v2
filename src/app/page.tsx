@@ -1,6 +1,6 @@
 "use client"
 
-import { useSyncExternalStore } from "react"
+import { useMemo, useSyncExternalStore } from "react"
 import Link from "next/link"
 import { Trophy, Palette, Timer, Shuffle, Vote, ClipboardList, ArrowRight, Play } from "lucide-react"
 import { AppShell } from "@/components/layout/AppShell"
@@ -16,23 +16,30 @@ interface LastLesson {
   lessonTitle: string
 }
 
-function getLastLesson(): LastLesson | null {
-  if (typeof window === "undefined") return null
-  const stored = localStorage.getItem("lastLesson")
-  if (!stored) return null
-  try {
-    return JSON.parse(stored) as LastLesson
-  } catch {
-    return null
-  }
+function subscribeToStorage(callback: () => void) {
+  window.addEventListener("storage", callback)
+  return () => window.removeEventListener("storage", callback)
+}
+
+function getStoredLesson(): string | null {
+  return localStorage.getItem("lastLesson")
+}
+
+function getServerSnapshot(): string | null {
+  return null
 }
 
 export default function HomePage() {
-  const lastLesson = useSyncExternalStore(
-    () => () => {},
-    () => getLastLesson(),
-    () => null
-  )
+  const stored = useSyncExternalStore(subscribeToStorage, getStoredLesson, getServerSnapshot)
+
+  const lastLesson = useMemo<LastLesson | null>(() => {
+    if (!stored) return null
+    try {
+      return JSON.parse(stored) as LastLesson
+    } catch {
+      return null
+    }
+  }, [stored])
 
   const semester1 = curriculum.semesters[0]
   const semester2 = curriculum.semesters[1]

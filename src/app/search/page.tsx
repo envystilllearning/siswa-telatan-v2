@@ -4,7 +4,7 @@ import { useState, useMemo } from "react"
 import Link from "next/link"
 import { Search as SearchIcon, ArrowRight } from "lucide-react"
 import { AppShell } from "@/components/layout/AppShell"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { curriculum } from "@/content/curriculum"
@@ -32,7 +32,10 @@ export default function SearchPage() {
         chapter.title.toLowerCase().includes(q) ||
         chapter.overview.toLowerCase().includes(q) ||
         chapter.question.toLowerCase().includes(q) ||
-        chapter.theme.toLowerCase().includes(q)
+        chapter.theme.toLowerCase().includes(q) ||
+        chapter.textType.includes(q) ||
+        chapter.languageFocus.some((lf) => lf.toLowerCase().includes(q)) ||
+        chapter.skills.some((skill) => skill.includes(q))
       ) {
         items.push({
           type: "chapter",
@@ -47,7 +50,8 @@ export default function SearchPage() {
         if (
           lesson.title.toLowerCase().includes(q) ||
           lesson.description.toLowerCase().includes(q) ||
-          lesson.conceptExplanation.toLowerCase().includes(q)
+          lesson.conceptExplanation.toLowerCase().includes(q) ||
+          lesson.languageFocus.some((lf) => lf.toLowerCase().includes(q))
         ) {
           items.push({
             type: "lesson",
